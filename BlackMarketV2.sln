@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackMarketV2", "BlackMarket\BlackMarketV2.csproj", "{36AC66E0-056E-45E5-BEC1-D6EDD9AC8BD0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36AC66E0-056E-45E5-BEC1-D6EDD9AC8BD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36AC66E0-056E-45E5-BEC1-D6EDD9AC8BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36AC66E0-056E-45E5-BEC1-D6EDD9AC8BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36AC66E0-056E-45E5-BEC1-D6EDD9AC8BD0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {85AB59B3-521D-4B1D-8B7F-5A30061C1D41}
+	EndGlobalSection
+EndGlobal
