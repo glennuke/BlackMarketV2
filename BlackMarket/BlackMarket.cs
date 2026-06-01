@@ -107,11 +107,11 @@ namespace BlackMarketV2
 
             // example code for making openable drug bos (placeholder coke model, theres only coke for now)
             GameObject testCokeBag = GameObject.Instantiate(CocaineBagPrefab);
-            testCokeBag.GetComponent<DrugBag>().weight = 1f;
-            testCokeBag.SetActive(false);
+            testCokeBag.GetComponent<DrugBag>().weight = 1f; // the weight in grams
+            testCokeBag.SetActive(false); // set it to disabled, the drugbox enables it when opened
 
             GameObject testDrugBox = GameObject.Instantiate(DrugBoxPrefab);
-            testDrugBox.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f);
+            testDrugBox.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f); // this position is right outside psk
             testDrugBox.GetComponent<DrugBox>().bagsInside.Add(testCokeBag);
 
             // example code for making an order phone number
