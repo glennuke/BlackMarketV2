@@ -1,4 +1,5 @@
 ﻿using MSCLoader;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -104,12 +105,21 @@ namespace BlackMarketV2
             shaderPass.effectMaterial = ab.LoadAsset<Material>("shroomtripMat");
             shaderPass.enabled = false;
 
-            GameObject testDrugBox = GameObject.Instantiate(DrugBoxPrefab);
-            testDrugBox.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f);
+            // example code for making openable drug bos (placeholder coke model, theres only coke for now)
             GameObject testCokeBag = GameObject.Instantiate(CocaineBagPrefab);
             testCokeBag.GetComponent<DrugBag>().weight = 1f;
             testCokeBag.SetActive(false);
+
+            GameObject testDrugBox = GameObject.Instantiate(DrugBoxPrefab);
+            testDrugBox.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f);
             testDrugBox.GetComponent<DrugBox>().bagsInside.Add(testCokeBag);
+
+            // example code for making an order phone number
+            List<GameObject> testOrder = new List<GameObject>()
+            {
+                testDrugBox
+            };
+            PhoneHandler.AddOrder(Random.Range(455555, 599999).ToString(), testOrder, 500f);
         }
 
         private void Mod_Update()

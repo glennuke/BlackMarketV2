@@ -37,7 +37,6 @@ namespace BlackMarketV2
 		internal void Start()
 		{
 			gameObject.MakePickable();
-			size = transform.localScale;
 			switch (drugType)
 			{
 				case DrugType.Cocaine:
