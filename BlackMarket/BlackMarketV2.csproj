@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="BlackMarket.cs" />
     <Compile Include="Cash.cs" />
+    <Compile Include="DealerHandler.cs" />
     <Compile Include="DrugBag.cs" />
     <Compile Include="DrugBox.cs" />
     <Compile Include="PhoneHandler.cs" />

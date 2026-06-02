@@ -119,7 +119,7 @@ namespace BlackMarketV2
             {
                 testDrugBox
             };
-            PhoneHandler.AddOrder(Random.Range(455555, 599999).ToString(), testOrder, 500f);
+            PhoneHandler.AddOrder(Random.Range(455555, 599999).ToString(), 500f, testOrder);
         }
 
         private void Mod_Update()

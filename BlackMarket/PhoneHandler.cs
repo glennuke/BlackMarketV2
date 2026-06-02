@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BlackMarketV2
 {
@@ -9,6 +11,8 @@ namespace BlackMarketV2
         public float timer;
         public float price;
         public bool isOrdered;
+        public string customSubtitle;
+        public Action onOrderAction;
         public List<GameObject> itemsToOrder;
     }
 
@@ -38,10 +42,10 @@ namespace BlackMarketV2
             isInitialized = true;
         }
 
-        public static void AddOrder(string phoneNumber, List<GameObject> itemsToOrder, float price)
+        public static void AddOrder(string phoneNumber, float price = 0f, List<GameObject> itemsToOrder = null, string customSubtitle = "")
         {
             if (!isInitialized) Init();
-            CustomNumbers.Add(new CustomNumber { number = phoneNumber, itemsToOrder = itemsToOrder, price = price });
+            CustomNumbers.Add(new CustomNumber { number = phoneNumber, itemsToOrder = itemsToOrder, price = price, customSubtitle = customSubtitle });
         }
     }
 
@@ -62,18 +66,21 @@ namespace BlackMarketV2
             {
                 if (customNumber.isOrdered)
                 {
+                    if (customNumber.onOrderAction != null) customNumber.onOrderAction();
                     if (customNumber.timer > 0)
                     {
                         customNumber.timer -= Time.deltaTime;
                     }
                     else
                     {
-                        foreach (GameObject item in customNumber.itemsToOrder)
+                        if (customNumber.itemsToOrder != null && customNumber.itemsToOrder.Count > 0)
                         {
-                            GameObject spawnedItem = GameObject.Instantiate(item);
-                            spawnedItem.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f);
+                            foreach (GameObject item in customNumber.itemsToOrder)
+                            {
+                                GameObject spawnedItem = GameObject.Instantiate(item);
+                                spawnedItem.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f);
+                            }
                         }
-                        PhoneHandler.CustomNumbers.Remove(customNumber);
                     }
                 }
             }
@@ -96,9 +103,12 @@ namespace BlackMarketV2
             {
                 if (CallingFSM.ActiveStateName == "Hangup")
                 {
-                    customNumberCurrentlyCalling.isOrdered = true;
-                    customNumberCurrentlyCalling.timer = Random.Range(600f, 2300f);
-                    isCallingCustom = false;
+                    if (!customNumberCurrentlyCalling.isOrdered)
+                    {
+                        customNumberCurrentlyCalling.isOrdered = true;
+                        customNumberCurrentlyCalling.timer = Random.Range(600f, 2300f);
+                        isCallingCustom = false;
+                    }
                 }
             }
         }
