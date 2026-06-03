@@ -1,4 +1,7 @@
-﻿using System;
+﻿using HutongGames.PlayMaker;
+using HutongGames.PlayMaker.Actions;
+using MSCLoader;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -25,27 +28,43 @@ namespace BlackMarketV2
 
         private static void Init()
         {
-            foreach (GameObject obj in GameObject.FindObjectsOfType<GameObject>())
+            ModConsole.Log("initializing PhoneHander");
+            foreach (GameObject obj in Resources.FindObjectsOfTypeAll<GameObject>())
             {
                 if (obj.name == "KeypadPhone1")
                 {
                     CustomPhoneOrderParents = obj.AddComponent<CustomPhoneOrder>();
                 }
 
-                if (obj.name == "KeypadPhone2")
+                if (obj.name == "KeypadPhone2" && obj.transform.root.name == "HOMENEW")
                 {
                     CustomPhoneOrderApartment = obj.AddComponent<CustomPhoneOrder>();
                 }
-
-                break;
             }
             isInitialized = true;
         }
 
-        public static void AddOrder(string phoneNumber, float price = 0f, List<GameObject> itemsToOrder = null, string customSubtitle = "")
+        public static void AddOrder(string phoneNumber, float price, Action onOrderAction = null, List<GameObject> itemsToOrder = null, string customSubtitle = "")
         {
             if (!isInitialized) Init();
-            CustomNumbers.Add(new CustomNumber { number = phoneNumber, itemsToOrder = itemsToOrder, price = price, customSubtitle = customSubtitle });
+            CustomNumbers.Add(new CustomNumber { number = phoneNumber, itemsToOrder = itemsToOrder, price = price, onOrderAction = onOrderAction, customSubtitle = customSubtitle });
+            ModConsole.Log("Added custom phone number " + phoneNumber);
+        }
+    }
+
+    public class CallbackAction : FsmStateAction
+    {
+        private Action callback;
+
+        public CallbackAction(Action callback)
+        {
+            this.callback = callback;
+        }
+
+        public override void OnEnter()
+        {
+            callback?.Invoke();
+            Finish();
         }
     }
 
@@ -58,6 +77,69 @@ namespace BlackMarketV2
         void Start()
         {
             CallingFSM = GetComponents<PlayMakerFSM>()[1];
+
+            FsmState findNumberState = CallingFSM.GetState("Find number");
+
+            findNumberState.InsertAction(0, new CallbackAction(() =>
+            {
+                string number = CallingFSM.FsmVariables.GetFsmString("Number").Value;
+
+                foreach (CustomNumber customNumber in PhoneHandler.CustomNumbers)
+                {
+                    if (customNumber.number == number)
+                    {
+                        findNumberState.GetAction<GameObjectCompare>(3).Enabled = false;
+                        customNumberCurrentlyCalling = customNumber;
+                        isCallingCustom = true;
+                        break;
+                    }
+                }
+            }));
+
+            FsmState callState = CallingFSM.GetState("Call");
+
+            callState.InsertAction(4, new CallbackAction(() =>
+            {
+                if (isCallingCustom)
+                {
+                    findNumberState.GetAction<GameObjectCompare>(3).Enabled = true;
+                    if (!customNumberCurrentlyCalling.isOrdered)
+                    {
+                        PlayMakerGlobals.Instance.Variables.GetFsmString("GUIsubtitle").Value = customNumberCurrentlyCalling.customSubtitle;
+                    }
+                }
+            }));
+
+            FsmState state2State = CallingFSM.GetState("State 2");
+
+            state2State.InsertAction(2, new CallbackAction(() =>
+            {
+                if (isCallingCustom)
+                {
+                    findNumberState.GetAction<GameObjectCompare>(3).Enabled = true;
+                    if (!customNumberCurrentlyCalling.isOrdered)
+                    {
+                        PlayMakerGlobals.Instance.Variables.GetFsmString("GUIsubtitle").Value = customNumberCurrentlyCalling.customSubtitle;
+                    }
+                }
+            }));
+
+            FsmState hangupState = CallingFSM.GetState("Hangup");
+
+            hangupState.InsertAction(0, new CallbackAction(() =>
+            {
+                if (isCallingCustom)
+                {
+                    if (!customNumberCurrentlyCalling.isOrdered)
+                    {
+                        customNumberCurrentlyCalling.onOrderAction?.Invoke();
+                        customNumberCurrentlyCalling.isOrdered = true;
+                        customNumberCurrentlyCalling.timer = Random.Range(600f, 2300f);
+                        customNumberCurrentlyCalling = null;
+                        isCallingCustom = false;
+                    }
+                }
+            }));
         }
 
         void Update()
@@ -66,7 +148,6 @@ namespace BlackMarketV2
             {
                 if (customNumber.isOrdered)
                 {
-                    if (customNumber.onOrderAction != null) customNumber.onOrderAction();
                     if (customNumber.timer > 0)
                     {
                         customNumber.timer -= Time.deltaTime;
@@ -81,33 +162,7 @@ namespace BlackMarketV2
                                 spawnedItem.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f);
                             }
                         }
-                    }
-                }
-            }
-
-            if (CallingFSM.ActiveStateName == "Find number")
-            {
-                foreach (CustomNumber customNumber in PhoneHandler.CustomNumbers)
-                {
-                    if (customNumber.number == CallingFSM.FsmVariables.GetFsmString("Number").Value)
-                    {
-                        CallingFSM.SendEvent("CALL");
-                        customNumberCurrentlyCalling = customNumber;
-                        isCallingCustom = true;
-                        break;
-                    }
-                }
-            }
-
-            if (isCallingCustom)
-            {
-                if (CallingFSM.ActiveStateName == "Hangup")
-                {
-                    if (!customNumberCurrentlyCalling.isOrdered)
-                    {
-                        customNumberCurrentlyCalling.isOrdered = true;
-                        customNumberCurrentlyCalling.timer = Random.Range(600f, 2300f);
-                        isCallingCustom = false;
+                        customNumber.isOrdered = false;
                     }
                 }
             }

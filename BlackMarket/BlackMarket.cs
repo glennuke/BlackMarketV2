@@ -69,6 +69,8 @@ namespace BlackMarketV2
 
         internal Text topLabelUI;
 
+        public DealerHandler dealerHandler;
+
         public static BlackMarket Instance;
 
         public override void ModSetup()
@@ -91,35 +93,45 @@ namespace BlackMarketV2
             GameObject canvas = GameObject.Instantiate<GameObject>(ab.LoadAsset<GameObject>("BlackMarketCanvas"));
             topLabelUI = canvas.transform.Find("LabelTop").GetComponent<Text>();
 
+            dealerHandler = GameObject.Instantiate(ab.LoadAsset<GameObject>("BlackMarketDealer")).GetComponent<DealerHandler>();
+            dealerHandler.transform.position = new Vector3(-1721.515f, 3.68f, 902.7165f);
+
             CashPrefab = ab.LoadAsset<GameObject>("Cash");
 
             DrugBoxPrefab = ab.LoadAsset<GameObject>("DrugBox");
 
             CocaineBagPrefab = ab.LoadAsset<GameObject>("Cocaine");
-            //AmphetamineBagPrefab = ab.LoadAsset<GameObject>("Amphetamine");
-            //MethamphetamineBagPrefab = ab.LoadAsset<GameObject>("Methamphetamine");
-            //ShroomsPrefabBagPrefab = ab.LoadAsset<GameObject>("Shrooms");
+            AmphetamineBagPrefab = ab.LoadAsset<GameObject>("Amphetamine");
+            MethamphetamineBagPrefab = ab.LoadAsset<GameObject>("Methamphetamine");
+            ShroomsPrefabBagPrefab = ab.LoadAsset<GameObject>("Shrooms");
 
             cam.gameObject.AddComponent<PlayerTrip>();
             ShaderPass shaderPass = cam.gameObject.AddComponent<ShaderPass>();
             shaderPass.effectMaterial = ab.LoadAsset<Material>("shroomtripMat");
             shaderPass.enabled = false;
 
-            // example code for making openable drug bos (placeholder coke model, theres only coke for now)
+            /*// example code for making openable drug bos (placeholder coke model, theres only coke for now)
             GameObject testCokeBag = GameObject.Instantiate(CocaineBagPrefab);
             testCokeBag.GetComponent<DrugBag>().weight = 1f; // the weight in grams
-            testCokeBag.SetActive(false); // set it to disabled, the drugbox enables it when opened
 
             GameObject testDrugBox = GameObject.Instantiate(DrugBoxPrefab);
-            testDrugBox.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f); // this position is right outside psk
-            testDrugBox.GetComponent<DrugBox>().bagsInside.Add(testCokeBag);
+            testDrugBox.transform.position = new Vector3(-1711.802f, 3.518661f, 924.8834f); // this position is right outside PSK
+            testDrugBox.GetComponent<DrugBox>().AddContent(testCokeBag);
 
             // example code for making an order phone number
             List<GameObject> testOrder = new List<GameObject>()
             {
                 testDrugBox
             };
-            PhoneHandler.AddOrder(Random.Range(455555, 599999).ToString(), 500f, testOrder);
+
+            PhoneHandler.AddOrder(Random.Range(455555, 599999).ToString(), 500f, null, testOrder);*/
+
+            InitDealerPhone();
+        }
+
+        void InitDealerPhone()
+        {
+            PhoneHandler.AddOrder("5924053", 0f, () => { dealerHandler.gameObject.SetActive(true); }, null, "You need some stuff? Okay, come meet me.");
         }
 
         private void Mod_Update()

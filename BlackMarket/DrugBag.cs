@@ -1,5 +1,7 @@
 ﻿using MSCLoader;
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BlackMarketV2
 {
@@ -24,7 +26,6 @@ namespace BlackMarketV2
 		public Vector3 rotation;
         void OnMouseOver()
         {
-            PlayMakerGlobals.Instance.Variables.GetFsmString("GUIinteraction").Value = string.Format("{0} {1} Grams",drugType, weight);
             if (Input.GetKeyDown("f"))
             {
 				PlayerTrip.Instance.isPlayerHigh = true;
@@ -34,27 +35,32 @@ namespace BlackMarketV2
 			}
 		}
 
-		internal void Start()
+		public void Init()
 		{
-			gameObject.MakePickable();
-			switch (drugType)
-			{
-				case DrugType.Cocaine:
-					price = Random.Range(70f, 250f) * weight;
-					break;
-				case DrugType.Amphetamine:
-					price = Random.Range(50f, 100f) * weight;
-					break;
-				case DrugType.Methamphetamine:
-					price = Random.Range(100f, 500f) * weight;
-					break;
-				case DrugType.Shrooms:
-					price = Random.Range(30f, 80f) * weight;
-					break;
-			}
-		}
+			Math.Round(weight, 2);
 
-		private void Update()
+            switch (drugType)
+            {
+                case DrugType.Cocaine:
+                    price = Random.Range(70f, 250f) * weight;
+                    break;
+                case DrugType.Amphetamine:
+                    price = Random.Range(50f, 100f) * weight;
+                    break;
+                case DrugType.Methamphetamine:
+                    price = Random.Range(100f, 500f) * weight;
+                    break;
+                case DrugType.Shrooms:
+                    price = Random.Range(30f, 80f) * weight;
+                    break;
+            }
+
+			gameObject.name = $"{drugType} {weight}g (Clone)";
+            gameObject.MakePickable();
+            gameObject.SetActive(false);
+        }
+
+		void Update()
 		{
 			position = transform.localPosition;
 			rotation = transform.localEulerAngles;
