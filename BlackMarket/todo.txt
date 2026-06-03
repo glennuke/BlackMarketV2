@@ -1,7 +1,5 @@
 ﻿todo list:
 
-* be able to call people and order drugs (done)
-* actually add some phone numbers that u can call (thor do this pls, i left example code in Mod_OnLoad in BlackMarket.cs)
 * add npcs u can sell to
 * add a gun
-* make actual models for the drugs
+* model the dealer
